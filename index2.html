@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新竹縣部落建設全覽 | Hsinchu Tribe</title>
+    <!-- Tailwind & Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Alpine.js (Animations) -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'SF Pro Display', 'PingFang TC', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(180deg, #fff 40%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* 滾動浮現動畫 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 手機端細節優化 */
+        @media (max-width: 640px) {
+            .card-grid { gap: 1rem; }
+            h1 { font-size: 3.5rem !important; }
+        }
+    </style>
+</head>
+<body x-data="projectApp()" class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-5 h-5 bg-blue-600 rounded-full"></div>
+                <span class="font-bold tracking-tighter text-lg uppercase">Hsinchu Tribe</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-xs font-semibold tracking-widest text-gray-400">
+                <button @click="filter = 'all'" :class="filter === 'all' ? 'text-white' : ''">全部工程</button>
+                <button @click="filter = 'safety'" :class="filter === 'safety' ? 'text-white' : ''">安全防護</button>
+                <button @click="filter = 'living'" :class="filter === 'living' ? 'text-white' : ''">環境品質</button>
+                <button @click="filter = 'roads'" :class="filter === 'roads' ? 'text-white' : ''">特色道路</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-40 pb-20 px-6 text-center">
+        <div class="reveal">
+            <h1 class="text-7xl md:text-9xl font-bold tracking-tighter text-gradient mb-6">
+                築。未來
+            </h1>
+            <p class="text-gray-500 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
+                25 項部落建設工程實時進度。透過設計與工程，連結新竹縣每一寸土地與文化。
+            </p>
+        </div>
+    </header>
+
+    <!-- Filter Bar (Mobile) -->
+    <div class="md:hidden sticky top-16 z-40 glass px-4 py-3 flex space-x-4 overflow-x-auto no-scrollbar border-b border-white/10">
+        <template x-for="cat in categories">
+            <button @click="filter = cat.id" 
+                    :class="filter === cat.id ? 'bg-white text-black' : 'bg-white/10 text-white'"
+                    class="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition"
+                    x-text="cat.name"></button>
+        </template>
+    </div>
+
+    <!-- Main Grid -->
+    <main class="max-w-7xl mx-auto px-6 pb-32">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 card-grid">
+            <template x-for="item in filteredProjects" :key="item.id">
+                <div class="reveal glass rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-white/30 transition-all group">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <span :class="item.statusColor" class="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-current opacity-80" x-text="item.status"></span>
+                            <span class="text-[10px] text-gray-600 font-mono" x-text="item.year"></span>
+                        </div>
+                        <h3 class="text-2xl font-bold leading-tight mb-2 group-hover:text-blue-400 transition" x-text="item.name"></h3>
+                        <p class="text-sm text-gray-500 font-light mb-6" x-text="item.type"></p>
+                        
+                        <!-- 進度條 -->
+                        <div class="mb-8">
+                            <div class="flex justify-between text-[10px] mb-2 font-mono">
+                                <span class="text-gray-500 uppercase">Current Progress</span>
+                                <span class="text-white" x-text="item.progress + '%'"></span>
+                            </div>
+                            <div class="w-full bg-white/5 h-[2px] rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full transition-all duration-1000" :style="'width: ' + item.progress + '%'"></div>
+                            </div>
+                        </div>
+
+                        <!-- 詳細資訊 -->
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between border-b border-white/5 pb-2">
+                                <span class="text-[10px] text-gray-500 uppercase">總預算</span>
+                                <span class="text-sm font-bold font-mono" x-text="'$' + item.total.toLocaleString()"></span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/5 pb-2">
+                                <span class="text-[10px] text-gray-500 uppercase">最新進度</span>
+                                <span class="text-[11px] text-gray-400 text-right w-2/3" x-text="item.note"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-auto">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] text-gray-600 uppercase">負責人</span>
+                            <span class="text-xs text-gray-400" x-text="item.owner"></span>
+                        </div>
+                        <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <footer class="py-20 border-t border-white/5 text-center text-gray-600 px-6">
+        <p class="text-[10px] tracking-[0.2em] uppercase mb-4">Hsinchu County Tribal Construction Dashboard</p>
+        <p class="text-xs font-light">© 2025 全案工程實時監控系統</p>
+    </footer>
+
+    <script>
+        function projectApp() {
+            return {
+                filter: 'all',
+                categories: [
+                    {id: 'all', name: '全部工程'},
+                    {id: 'safety', name: '安全防護'},
+                    {id: 'living', name: '環境品質'},
+                    {id: 'roads', name: '特色道路'}
+                ],
+                // 完整 25 個案件數據
+                projects: [
+                    // 安全防護系列
+                    { id: 1, cat: 'safety', year: '114', name: '五峰鄉五峰部落', type: '安全防減災規劃設計', total: 588056, progress: 40, status: '墊付中', statusColor: 'text-blue-400', note: '114/12/10 函報第一期請款', owner: '未填寫' },
+                    { id: 2, cat: 'safety', year: '114', name: '五峰鄉泰平部落(含隘口)', type: '安全防減災地滑調查評估', total: 831894, progress: 40, status: '墊付中', statusColor: 'text-blue-400', note: '預計12月下旬議會審議', owner: '未填寫' },
+                    { id: 3, cat: 'safety', year: '114', name: '五峰鄉泰平部落(含隘口)', type: '安全防減災工程規劃設計', total: 1353819, progress: 40, status: '墊付中', statusColor: 'text-blue-400', note: '114/12/10 函報第一期請款', owner: '未填寫' },
+                    { id: 4, cat: 'safety', year: '114', name: '尖石鄉帛納外部落', type: '安全防(減)災工程規劃', total: 652756, progress: 85, status: '修正中', statusColor: 'text-yellow-500', note: '114/11/18 提送修正版至原民會', owner: '曾劭鈞' },
+                    { id: 5, cat: 'safety', year: '114', name: '尖石鄉平論文部落', type: '安全防(減)災工程規劃', total: 207153, progress: 85, status: '修正中', statusColor: 'text-yellow-500', note: '114/11/18 提送修正版至原民會', owner: '曾劭鈞' },
+                    { id: 6, cat: 'safety', year: '114', name: '尖石鄉抬耀部落', type: '安全防(減)災工程規劃', total: 211434, progress: 85, status: '修正中', statusColor: 'text-yellow-500', note: '114/11/18 提送修正版至原民會', owner: '曾劭鈞' },
+                    { id: 7, cat: 'safety', year: '114', name: '尖石鄉石磊部落', type: '安全防(減)災工程規劃', total: 475980, progress: 85, status: '修正中', statusColor: 'text-yellow-500', note: '114/11/18 提送修正版至原民會', owner: '曾劭鈞' },
+                    { id: 8, cat: 'safety', year: '113/114', name: '部落永續建設藍圖', type: '規劃期末報告', total: 9090910, progress: 90, status: '期末審查', statusColor: 'text-purple-400', note: '預計12月中下旬辦理會議', owner: '曾劭鈞' },
+                    { id: 9, cat: 'safety', year: '112/113', name: '112年部落永續藍圖', type: '藍圖規劃', total: 9090910, progress: 100, status: '結案', statusColor: 'text-green-500', note: '本案已結案', owner: '曾劭鈞' },
+                    { id: 10, cat: 'safety', year: '111/112', name: '111年部落永續藍圖', type: '藍圖規劃', total: 9090910, progress: 100, status: '結案', statusColor: 'text-green-500', note: '本案已結案', owner: '曾劭鈞' },
+                    
+                    // 環境品質系列
+                    { id: 11, cat: 'living', year: '115', name: '尖石鄉斯馬庫斯聚會所', type: '規劃設計案', total: 2664000, progress: 10, status: '代表會審查', statusColor: 'text-blue-400', note: '114/12/19 代表會預計審查', owner: '曾永湘' },
+                    { id: 12, cat: 'living', year: '114', name: '113年部落建設藍圖', type: '藍圖規畫案', total: 10909000, progress: 50, status: '期中報告', statusColor: 'text-yellow-500', note: '期中報告(定稿)本府審核中', owner: '曾永湘' },
+                    { id: 13, cat: 'living', year: '114', name: '戈尤浪部落聚會所', type: '興建工程(B類)規劃', total: 1012714, progress: 20, status: '修正作業', statusColor: 'text-yellow-500', note: '依原民會12/02意見修正中', owner: '黃張瑄' },
+                    { id: 14, cat: 'living', year: '114', name: '馬胎部落公共設施', type: '設施改善工程', total: 2865000, progress: 15, status: '開工', statusColor: 'text-orange-500', note: '114/12/10開工，第一期款簽核中', owner: '曾永湘' },
+                    { id: 15, cat: 'living', year: '114', name: '梅達拜等5部落設施', type: '規劃設計', total: 232424, progress: 30, status: '計畫修正', statusColor: 'text-yellow-500', note: '公所函送廠商修正中', owner: '曾永湘' },
+                    { id: 16, cat: 'living', year: '114', name: '上下田埔部落設施', type: '規劃設計', total: 884231, progress: 30, status: '計畫修正', statusColor: 'text-yellow-500', note: '公所函送廠商修正中', owner: '曾永湘' },
+                    { id: 17, cat: 'living', year: '114', name: '那羅部落設施改善', type: '規劃設計', total: 1078585, progress: 30, status: '計畫修正', statusColor: 'text-yellow-500', note: '公所函送廠商修正中', owner: '曾永湘' },
+                    { id: 18, cat: 'living', year: '112', name: '112年部落永續藍圖', type: '藍圖規畫', total: 5681819, progress: 100, status: '結案', statusColor: 'text-green-500', note: '本案已結案', owner: '潘佳宣' },
+                    { id: 19, cat: 'living', year: '112', name: '和平部落文化聚會所', type: '興建工程規劃', total: 2500000, progress: 70, status: '建照審查', statusColor: 'text-blue-400', note: '預計12月底核發建照', owner: '謝雨芯' },
+                    { id: 20, cat: 'living', year: '112', name: '朱家莊賽夏祭場', type: '祭場形塑工程規劃', total: 4800000, progress: 40, status: '預算排審', statusColor: 'text-blue-400', note: '預算書排定審查中', owner: '彭約瑟' },
+                    { id: 21, cat: 'living', year: '111', name: '尖石秀巒村排水工程', type: '排水崩塌工程', total: 9167000, progress: 100, status: '結案', statusColor: 'text-green-500', note: '本案已結案', owner: '曾永湘' },
+                    
+                    // 道路系列
+                    { id: 22, cat: 'roads', year: '114', name: '錦山里而完窩道路', type: '聯絡道路改善', total: 7000000, progress: 10, status: '公開評選', statusColor: 'text-blue-400', note: '預計12/11議價', owner: '江忠智' },
+                    { id: 23, cat: 'roads', year: '114', name: '玉峰村馬美至下文光', type: '聯絡道路改善', total: 1600000, progress: 60, status: '預算書審查', statusColor: 'text-blue-400', note: '公所12/02辦理預算書審查', owner: '曾永湘' },
+                    { id: 24, cat: 'roads', year: '114', name: '新樂村拉號部落道路', type: '聯絡道路改善', total: 800000, progress: 80, status: '設計完成', statusColor: 'text-green-500', note: '11/13撥付第一期款', owner: '曾永湘' },
+                    { id: 25, cat: 'roads', year: '114', name: '新樂村上水田部落道路', type: '聯絡道路改善', total: 1200000, progress: 80, status: '設計完成', statusColor: 'text-green-500', note: '11/13撥付第一期款', owner: '曾永湘' }
+                ],
+                get filteredProjects() {
+                    if (this.filter === 'all') return this.projects;
+                    return this.projects.filter(p => p.cat === this.filter);
+                },
+                init() {
+                    // 初始化圖標
+                    lucide.createIcons();
+                    
+                    // 滾動偵測器 (Intersection Observer)
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('active');
+                            }
+                        });
+                    }, { threshold: 0.1 });
+
+                    // 使用 setTimeout 確保 Alpine 渲染完成
+                    setTimeout(() => {
+                        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                    }, 100);
+
+                    // 監聽濾鏡變化重新執行動畫
+                    this.$watch('filter', () => {
+                        setTimeout(() => {
+                            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                            lucide.createIcons();
+                        }, 50);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
