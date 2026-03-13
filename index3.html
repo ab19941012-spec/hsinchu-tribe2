@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新竹縣部落建設進度報告 | MUJI Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        :root {
+            --muji-bg: #F4F4F1;
+            --muji-text: #333333;
+            --muji-gray: #7F7F7F;
+            --muji-red: #BC2121; /* MUJI 標誌紅，僅用於點綴 */
+            --muji-border: #E0E0E0;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--muji-bg);
+            color: var(--muji-text);
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .muji-card {
+            background: white;
+            border: 1px solid var(--muji-border);
+            transition: border 0.3s ease;
+        }
+        .muji-card:hover {
+            border: 1px solid var(--muji-gray);
+        }
+        /* 隱藏滾動條 */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--muji-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--muji-gray); }
+    </style>
+</head>
+<body x-data="mujiApp()">
+
+    <!-- Header -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <span class="text-sm font-medium tracking-widest text-gray-500 uppercase">Hsinchu Tribe Progress</span>
+            <span class="text-[10px] text-gray-400 font-light" x-text="today"></span>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="pt-32 pb-20 px-6 max-w-5xl mx-auto">
+        <div class="reveal">
+            <h1 class="text-3xl md:text-4xl font-light text-gray-800 mb-4">部落建設工程進度</h1>
+            <p class="text-sm text-gray-500 font-light max-w-md leading-loose">
+                此報告彙整新竹縣 25 項原住民族部落建設。我們以誠實、透明的態度，呈現每一項工程的現況與未來計畫。
+            </p>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <div class="max-w-5xl mx-auto px-6 mb-12 flex space-x-8 text-xs font-medium border-b border-gray-200 overflow-x-auto pb-4 no-scrollbar">
+        <template x-for="cat in categories">
+            <button @click="filter = cat.id" 
+                    class="whitespace-nowrap pb-2 transition-colors relative"
+                    :class="filter === cat.id ? 'text-black' : 'text-gray-400 hover:text-gray-600'">
+                <span x-text="cat.name"></span>
+                <div x-show="filter === cat.id" class="absolute bottom-0 left-0 w-full h-[1px] bg-red-800"></div>
+            </button>
+        </template>
+    </div>
+
+    <!-- Project List -->
+    <main class="max-w-5xl mx-auto px-6 pb-40">
+        <div class="grid grid-cols-1 gap-12">
+            <template x-for="(item, index) in filteredProjects" :key="item.id">
+                <div class="reveal muji-card p-8 md:p-12 relative overflow-hidden">
+                    <!-- Status Label -->
+                    <div class="absolute top-0 right-0 px-4 py-1 text-[10px] font-medium border-l border-b border-gray-100 text-gray-400 tracking-tighter" x-text="'ID: ' + item.id"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-start gap-8">
+                        <!-- Year & Basic Info -->
+                        <div class="w-full md:w-1/4">
+                            <div class="text-[10px] text-red-800 font-bold mb-2 tracking-widest" x-text="item.year + ' 年度'"></div>
+                            <h2 class="text-xl font-medium mb-4 text-gray-800" x-text="item.name"></h2>
+                            <div class="text-[11px] text-gray-500 space-y-1 font-light">
+                                <p x-text="'性質：' + item.type"></p>
+                                <p x-text="'承辦人：' + item.owner"></p>
+                            </div>
+                        </div>
+
+                        <!-- Content Info -->
+                        <div class="w-full md:w-2/4">
+                            <div class="mb-6">
+                                <span class="text-[10px] uppercase text-gray-400 tracking-widest block mb-2">最新進度概述</span>
+                                <p class="text-sm text-gray-600 font-light leading-relaxed" x-text="item.note"></p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 border-t border-gray-50 pt-4">
+                                <div>
+                                    <span class="text-[10px] text-gray-400 block uppercase tracking-tighter">目前里程碑</span>
+                                    <span class="text-xs font-medium text-gray-700" x-text="item.milestone"></span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-gray-400 block uppercase tracking-tighter">核定日期</span>
+                                    <span class="text-xs font-medium text-gray-700" x-text="item.date"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Budget Info -->
+                        <div class="w-full md:w-1/4 bg-gray-50 p-6">
+                            <span class="text-[10px] text-gray-400 block uppercase mb-4 tracking-widest">經費細項 (元)</span>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-[10px] text-gray-500">總額</span>
+                                    <span class="text-sm font-medium" x-text="item.total.toLocaleString()"></span>
+                                </div>
+                                <div class="flex justify-between items-baseline border-t border-gray-200 pt-2">
+                                    <span class="text-[9px] text-gray-400">原民會補助</span>
+                                    <span class="text-[11px] text-gray-600" x-text="item.subsidy.toLocaleString()"></span>
+                                </div>
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-[9px] text-gray-400">地方配合款</span>
+                                    <span class="text-[11px] text-gray-600" x-text="item.match.toLocaleString()"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-20 px-6 text-center">
+        <p class="text-[10px] text-gray-400 tracking-[0.3em] uppercase">Muji style Progress Monitoring</p>
+        <p class="text-[10px] text-gray-300 mt-2 font-light tracking-widest">無印良品風 · 簡約透明 · 實踐未來</p>
+    </footer>
+
+    <script>
+        function mujiApp() {
+            return {
+                filter: 'all',
+                today: new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' }),
+                categories: [
+                    {id: 'all', name: '全體工程項目'},
+                    {id: 'safety', name: '部落安全防減災'},
+                    {id: 'living', name: '居住環境品質提升'},
+                    {id: 'roads', name: '特色道路改善計畫'}
+                ],
+                // 數據 100% 完整呈現原始 PDF 內容
+                projects: [
+                    // Section 1: 部落永續建設藍圖規劃及強化部落安全防(減)災機能
+                    { id: 1, cat: 'safety', year: '114', name: '114年新竹縣五峰鄉五峰部落安全防減災工程規劃設計', type: '規劃設計', total: 588056, subsidy: 499848, match: 88208, date: '114.11.07', milestone: '核定執行單位', note: '縣府辦理墊付中（預計114年12月下旬議會審議），並已於114/12/10函報第一期請款。', owner: '（未填寫）' },
+                    { id: 2, cat: 'safety', year: '114', name: '114年新竹縣五峰鄉泰平部落(含隘口)安全防減災地滑調查評估', type: '規劃設計', total: 831894, subsidy: 707110, match: 124784, date: '114.11.07', milestone: '核定執行單位', note: '縣府辦理墊付中（預計114年12月下旬議會審議），並已於114/12/10函報第一期請款。', owner: '（未填寫）' },
+                    { id: 3, cat: 'safety', year: '114', name: '114年新竹縣五峰鄉泰平部落(含隘口)安全防減災工程規劃設計', type: '規劃設計', total: 1353819, subsidy: 1150746, match: 203073, date: '114.11.07', milestone: '核定執行單位', note: '縣府辦理墊付中（預計114年12月下旬議會審議），並已於114/12/10函報第一期請款。', owner: '（未填寫）' },
+                    { id: 4, cat: 'safety', year: '114', name: '113年新竹縣尖石鄉帛納外部落安全防(減)災工程', type: '規劃設計', total: 652756, subsidy: 554843, match: 97913, date: '114.01.23', milestone: '規劃設計完成', note: '縣府已於114/11/18提送修正版提案資料至原民會審查。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 5, cat: 'safety', year: '114', name: '113年新竹縣尖石鄉平論文部落安全防(減)災工程', type: '規劃設計', total: 207153, subsidy: 176080, match: 31073, date: '114.01.23', milestone: '規劃設計完成', note: '縣府已於114/11/18提送修正版提案資料至原民會審查。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 6, cat: 'safety', year: '114', name: '113年新竹縣尖石鄉抬耀部落安全防(減)災工程', type: '規劃設計', total: 211434, subsidy: 179719, match: 31715, date: '114.01.23', milestone: '規劃設計完成', note: '縣府已於114/11/18提送修正版提案資料至原民會審查。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 7, cat: 'safety', year: '114', name: '113年新竹縣尖石鄉石磊部落安全防(減)災工程', type: '規劃設計', total: 475980, subsidy: 404583, match: 71397, date: '114.01.23', milestone: '規劃設計完成', note: '縣府已於114/11/18提送修正版提案資料至原民會審查。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 8, cat: 'safety', year: '113/114', name: '113年新竹縣部落永續建設藍圖規劃', type: '藍圖規劃', total: 9090910, subsidy: 3163637, match: 5927273, date: '113.08.15', milestone: '規劃設計完成', note: '已於114/11/18提送期末報告書，預計12月中下旬辦理期末審查會議。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 9, cat: 'safety', year: '112/113', name: '112年新竹縣部落永續建設藍圖規劃', type: '藍圖規劃', total: 9090910, subsidy: 8000000, match: 1090910, date: '112.06.09', milestone: '結案', note: '結案。', owner: '曾劭鈞 03-5518101#5635' },
+                    { id: 10, cat: 'safety', year: '111/112', name: '111年新竹縣部落永續建設藍圖規劃', type: '藍圖規劃', total: 9090910, subsidy: 8000000, match: 1090910, date: '111.06.01', milestone: '結案', note: '結案。', owner: '曾劭鈞 03-5518101#5635' },
+
+                    // Section 2: 部落永續建設藍圖規劃及原住民族部落居住環境品質提升計畫
+                    { id: 11, cat: 'living', year: '115', name: '尖石鄉斯馬庫斯文化聚會所規劃設計案', type: '規劃設計', total: 2664000, subsidy: 2264400, match: 399600, date: '114.11.28', milestone: '核定執行單位', note: '公所預計114/12/19代表會審查。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 12, cat: 'living', year: '114', name: '113年新竹縣部落永續建設藍圖規劃', type: '藍圖規畫', total: 10909000, subsidy: 9599920, match: 1309080, date: '114.01.02', milestone: '開始設計', note: '114/12/09廠商提送期中報告書(定稿版)本府審核中。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 13, cat: 'living', year: '114', name: '113年戈尤浪部落聚會所興建工程(B類)', type: '規劃設計', total: 1012714, subsidy: 860807, match: 151907, date: '114.01.02', milestone: '開始設計', note: '原民會於114/12/02檢送書審意見，刻正依意見辦理提案計畫修正作業，預計12月底前修正完成。', owner: '黃張瑄 03-5518101#5633' },
+                    { id: 14, cat: 'living', year: '114', name: '馬胎部落公共設施改善工程', type: '規劃設計/施工監造', total: 2865000, subsidy: 2435250, match: 429750, date: '114.08.06', milestone: '開工', note: '114/12/10辦理開工，第一期款請款資料公所簽核中，縣府已於114/11/26先行函報。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 15, cat: 'living', year: '114', name: '梅達拜、梅拉姆拉克、梅阿尤達克、梅魯庫互部落公共設施改善工程規劃設計', type: '規劃設計', total: 232424, subsidy: 197560, match: 34864, date: '114.08.06', milestone: '開始設計', note: '鈞會於114/12/05函示撥付第一期款，縣府於114/12/04函退公所提案計畫書，公所函送廠商修正中。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 16, cat: 'living', year: '114', name: '上田埔、下田埔部落共設施改善工程規劃設計', type: '規劃設計', total: 884231, subsidy: 751596, match: 132635, date: '114.08.06', milestone: '開始設計', note: '鈞會於114/12/05函示撥付第一期款，縣府於114/12/04函退公所提案計畫書，公所函送廠商修正中。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 17, cat: 'living', year: '114', name: '錦屏村那羅部落公共設施改善工程規劃設計', type: '規劃設計', total: 1078585, subsidy: 916797, match: 161788, date: '114.08.06', milestone: '開始設計', note: '縣府於114/11/24函送第一期請款資料，縣府於114/12/04函退公所提案計畫書，公所函送廠商修正中。', owner: '曾永湘 (03)5841001-403' },
+                    { id: 18, cat: 'living', year: '112', name: '112年新竹縣部落永續建設藍圖規劃', type: '藍圖規畫', total: 5681819, subsidy: 5000000, match: 681819, date: '112.09.14', milestone: '結案', note: '結案。', owner: '潘佳宣 03-5518101#5656' },
+                    { id: 19, cat: 'living', year: '112', name: '和平部落文化聚會所興建工程規劃設計', type: '規劃設計', total: 2500000, subsidy: 2125000, match: 375000, date: '112.09.14', milestone: '開始設計', note: '建照審查中，預計12月底前核發建照。', owner: '謝雨芯 03-5851001#608' },
+                    { id: 20, cat: 'living', year: '112', name: '朱家莊部落賽夏矮靈祭場形塑工程規劃設計「併案朱家莊」', type: '規劃設計', total: 4800000, subsidy: 2125000, match: 375000, date: '112.09.14', milestone: '開始設計', note: '預算書排審中。', owner: '彭約瑟 03-5851001#605' },
+                    { id: 21, cat: 'living', year: '111', name: '新竹縣尖石鄉秀巒村八鄰部落排水崩坍工程', type: '工程', total: 9167000, subsidy: 7792000, match: 1375000, date: '111.04.21', milestone: '結案', note: '結案。', owner: '曾永湘 (03)5841001-403' },
+
+                    // Section 3: 原住民族部落特色道路改善計畫
+                    { id: 22, cat: 'roads', year: '114', name: '錦山里21鄰而完窩至22鄰部落聯絡道路改善工程', type: '（未填寫）', total: 7000000, subsidy: 5950000, match: 1050000, date: '114.11.12', milestone: '公開評選', note: '預計114.12.11議價，待代表會臨時會同意墊付後，函送第一期請款資料至縣府。', owner: '江忠智 03-5873180#185' },
+                    { id: 23, cat: 'roads', year: '114', name: '玉峰村馬美至下文光部落聯絡道路改善工程', type: '規劃設計', total: 1600000, subsidy: 1360000, match: 240000, date: '114.10.08', milestone: '規劃設計完成', note: '縣府於114.11.17函送第一期款資料，鈞會於114.12.1函示撥付，公所於114.12.2辦理預算書審查。', owner: '曾永湘 03-5841001-403' },
+                    { id: 24, cat: 'roads', year: '114', name: '新樂村拉號部落聯絡道改善工程', type: '規劃設計', total: 800000, subsidy: 680000, match: 120000, date: '114.08.05', milestone: '規劃設計完成', note: '鈞會於114.11.13函示撥付第一期款，公所於114.11.21函送設計預算書及申請書至縣府。', owner: '曾永湘 03-5841001-403' },
+                    { id: 25, cat: 'roads', year: '114', name: '新樂村上水田部落聯絡道改善工程', type: '規劃設計', total: 1200000, subsidy: 1020000, match: 180000, date: '114.08.05', milestone: '規劃設計完成', note: '鈞會於114.11.13函示撥付第一期款，公所於114.11.21函送設計預算書及申請書至縣府。', owner: '曾永湘 03-5841001-403' }
+                ],
+                get filteredProjects() {
+                    if (this.filter === 'all') return this.projects;
+                    return this.projects.filter(p => p.cat === this.filter);
+                },
+                init() {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) entry.target.classList.add('active');
+                        });
+                    }, { threshold: 0.1 });
+
+                    this.$watch('filter', () => {
+                        setTimeout(() => {
+                            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                        }, 100);
+                    });
+
+                    setTimeout(() => {
+                        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                    }, 200);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
