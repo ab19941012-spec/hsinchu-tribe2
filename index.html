@@ -47,9 +47,9 @@
 
     <!-- Nav -->
     <nav class="fixed top-0 w-full z-50 bg-black/95 backdrop-blur-xl border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between overflow-x-auto no-scrollbar">
-            <span class="text-[16px] font-bold tracking-tight whitespace-nowrap mr-6">部落建設</span>
-            <div class="flex space-x-6 text-[14px] text-gray-400">
+        <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between overflow-x-auto no-scrollbar">
+            <span class="text-[17px] font-bold tracking-tight whitespace-nowrap mr-6 text-white">部落建設</span>
+            <div class="flex space-x-6 text-[15px] text-gray-400">
                 <template x-for="cat in categories">
                     <button @click="filter = cat.id" 
                             :class="filter === cat.id ? 'text-white font-bold underline underline-offset-8' : ''" 
@@ -63,10 +63,10 @@
     <!-- Hero -->
     <header class="pt-24 pb-6 px-6 text-center">
         <div class="reveal">
-            <h1 class="text-3xl font-bold tracking-tight text-gradient mb-2">
+            <h1 class="text-[32px] font-bold tracking-tight text-gradient mb-2">
                 新竹縣原鄉地區部落建設
             </h1>
-            <p class="text-[14px] text-gray-400 font-medium tracking-widest uppercase">案件彙整資訊平台</p>
+            <p class="text-[15px] text-gray-400 font-medium tracking-widest uppercase">案件彙整資訊平台</p>
         </div>
     </header>
 
@@ -82,26 +82,26 @@
                             <span class="text-[11px] text-gray-500 font-mono" x-text="'ID: PRJ-' + item.id"></span>
                         </div>
                         
-                        <!-- Project Name (大字體) -->
-                        <h2 class="text-[21px] font-bold leading-tight mb-5" x-text="item.name"></h2>
+                        <!-- Project Name (超大字體) -->
+                        <h2 class="text-[22px] font-bold leading-tight mb-5" x-text="item.name"></h2>
                         
-                        <!-- Status & Milestone -->
+                        <!-- Status & Milestone (加強可讀性) -->
                         <div class="mb-6 space-y-4">
-                            <div class="bg-white/5 rounded-2xl p-4 border border-white/5">
+                            <div class="bg-white/5 rounded-2xl p-4 border border-white/5 shadow-inner">
                                 <span class="text-[11px] text-gray-500 font-bold uppercase block mb-1">目前里程碑</span>
-                                <p class="text-[16px] text-white font-semibold" x-text="item.milestone"></p>
+                                <p class="text-[17px] text-white font-semibold leading-tight" x-text="item.milestone"></p>
                             </div>
                             <div>
                                 <span class="text-[11px] text-gray-500 font-bold uppercase block mb-1">最新進度概述</span>
-                                <p class="text-[16px] text-gray-400 leading-relaxed" x-text="item.note"></p>
+                                <p class="text-[16px] text-gray-400 leading-relaxed font-normal" x-text="item.note"></p>
                             </div>
                         </div>
 
                         <!-- Full Financial Table -->
                         <div class="bg-black/40 rounded-2xl p-5 border border-white/5 mb-6">
                             <div class="budget-row">
-                                <span class="text-[14px] text-gray-400">總經費</span>
-                                <span class="text-[16px] font-bold font-mono text-white" x-text="item.total > 0 ? '$' + item.total.toLocaleString() : '未定'"></span>
+                                <span class="text-[15px] text-gray-400">總經費</span>
+                                <span class="text-[17px] font-bold font-mono text-white" x-text="item.total > 0 ? '$' + item.total.toLocaleString() : '未定'"></span>
                             </div>
                             <div class="budget-row">
                                 <span class="text-[14px] text-gray-400" x-text="item.subsidyLabel"></span>
@@ -114,15 +114,15 @@
                         </div>
                     </div>
 
-                    <!-- Footer -->
-                    <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-end text-[14px]">
+                    <!-- Footer Info (強化手機端對齊) -->
+                    <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-end">
                         <div>
-                            <span class="text-[11px] text-gray-600 font-bold block uppercase mb-1">負責人員</span>
-                            <span class="text-gray-300 font-medium" x-text="item.owner"></span>
+                            <span class="text-[11px] text-gray-600 font-bold block uppercase tracking-tighter mb-1">負責人員</span>
+                            <span class="text-[15px] text-gray-300 font-medium" x-text="item.owner"></span>
                         </div>
                         <div class="text-right">
-                            <span class="text-[11px] text-gray-600 font-bold block uppercase mb-1">核定日期</span>
-                            <span class="text-gray-400 font-mono" x-text="item.date"></span>
+                            <span class="text-[11px] text-gray-600 font-bold block uppercase tracking-tighter mb-1">核定日期</span>
+                            <span class="text-[15px] text-gray-400 font-mono" x-text="item.date"></span>
                         </div>
                     </div>
                 </div>
@@ -139,38 +139,47 @@
                     {id: 'safety', name: '防減災'}, 
                     {id: 'living', name: '居住提升'}, 
                     {id: 'roads', name: '特色道路'}, 
-                    {id: 'subsidy60m', name: '6000萬縣款'}
+                    {id: 'subsidy60m', name: '6000萬縣款'},
+                    {id: 'pending', name: '未核定案件'}
                 ],
                 projects: [
-                    // PAGE 1: 防減災機能
-                    { id: 1, cat: 'safety', year: '115', name: '113年尖石鄉平論文部落安全防(減)災工程', total: 0, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '縣府於114.11.18提送工程提案至原民會審查。', date: '未定', owner: '曾永湘 #403' },
-                    { id: 2, cat: 'safety', year: '115', name: '113年尖石鄉石磊部落安全防(減)災工程', total: 0, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '縣府於114.11.18提送工程提案至原民會審查。', date: '未定', owner: '曾永湘 #403' },
-                    { id: 3, cat: 'safety', year: '114', name: '五峰鄉五峰部落安全防減災工程規劃設計', total: 588056, subsidy: 499848, match: 88208, subsidyLabel: '原民會補助', milestone: '開始設計', note: '預計於115.11.1內提送期中報告書。', date: '114.11.07', owner: '未填寫' },
-                    { id: 4, cat: 'safety', year: '114', name: '尖石鄉帛納外部落安全防(減)災工程', total: 652756, subsidy: 554843, match: 97913, subsidyLabel: '原民會補助', milestone: '結案', note: '本案已結案。', date: '114.01.23', owner: '曾劭鈞' },
-                    { id: 5, cat: 'safety', year: '113/114', name: '113年部落永續建設藍圖規劃', total: 9090910, subsidy: 3163637, match: 5927273, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '115.3.10成果報告書已核備，辦理結算驗收中。', date: '113.08.15', owner: '曾劭鈞' },
+                    // --- 防減災 (已核定) ---
+                    { id: 1, cat: 'safety', year: '114/115', name: '五峰鄉五峰部落安全防減災工程規劃設計', total: 588056, subsidy: 499848, match: 88208, subsidyLabel: '原民會補助', milestone: '開始規劃設計', note: '3案併案辦理。預計於115.11.1內提送期中報告書。', date: '114.11.07', owner: '彭約瑟' },
+                    { id: 2, cat: 'safety', year: '114/115', name: '五峰鄉泰平部落(含隘口)安全防減災工程規劃', total: 1353819, subsidy: 1150746, match: 203073, subsidyLabel: '原民會補助', milestone: '開始規劃設計', note: '3案併案辦理。預計於115.11.1內提送期中報告書。', date: '114.11.07', owner: '彭約瑟' },
+                    { id: 3, cat: 'safety', year: '113/114/115', name: '113年部落永續建設藍圖規劃', total: 9090910, subsidy: 3163637, match: 5927273, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '115.3.10成果報告書已核備。辦理結算驗收中。', date: '113.08.15', owner: '曾劭鈞' },
+                    { id: 4, cat: 'safety', year: '114/115', name: '尖石鄉帛納外部落安全防(減)災工程', total: 652756, subsidy: 554843, match: 97913, subsidyLabel: '原民會補助', milestone: '驗收結算', note: '公所請款文件製作中。', date: '114.01.23', owner: '曾劭鈞' },
 
-                    // PAGE 2: 居住環境提升
-                    { id: 6, cat: 'living', year: '115', name: '113年馬里光部落公共設施改善工程', total: 18480000, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '縣府於114.6.26發函修正提案至原民會。', date: '未定', owner: '曾永湘' },
-                    { id: 7, cat: 'living', year: '115', name: '尖石鄉斯馬庫斯文化聚會所規劃', total: 2664000, subsidy: 2264400, match: 399600, subsidyLabel: '原民會補助', milestone: '開工', note: '115.2.26決標，115.3.9訂約，案件執行中。', date: '114.11.28', owner: '曾永湘' },
-                    { id: 8, cat: 'living', year: '114', name: '113年尖石鄉部落永續建設藍圖', total: 10909000, subsidy: 9599920, match: 1309080, subsidyLabel: '原民會補助', milestone: '開始設計', note: '115.3.6廠商提送期末報告書初審中。', date: '114.01.02', owner: '郭承樺' },
-                    { id: 9, cat: 'living', year: '114', name: '馬胎部落公共設施改善工程', total: 2865000, subsidy: 2435250, match: 429750, subsidyLabel: '原民會補助', milestone: '開工', note: '因辦理變更設計程序，於115.2.12辦理停工。', date: '114.08.06', owner: '曾永湘' },
-                    { id: 10, cat: 'living', year: '112', name: '和平部落文化聚會所興建工程', total: 2500000, subsidy: 2125000, match: 375000, subsidyLabel: '原民會補助', milestone: '開始設計', note: '建照審查中，預計115年4月底前核發建照。', date: '112.09.14', owner: '謝雨芯' },
+                    // --- 居住提升 (已核定) ---
+                    { id: 5, cat: 'living', year: '115', name: '斯馬庫斯文化聚會所規劃設計案', total: 2664000, subsidy: 2264400, match: 399600, subsidyLabel: '原民會補助', milestone: '開始設計', note: '115.2.26決標，115.3.9訂約，目前案件執行中。', date: '114.11.28', owner: '曾永湘' },
+                    { id: 6, cat: 'living', year: '114/115', name: '113年尖石鄉部落永續建設藍圖', total: 10909000, subsidy: 9599920, match: 1309080, subsidyLabel: '原民會補助', milestone: '開始規劃設計', note: '115.3.6廠商提送期末報告書初審中。', date: '114.01.02', owner: '郭承樺' },
+                    { id: 7, cat: 'living', year: '114/115', name: '戈尤浪部落聚會所興建規劃', total: 1012714, subsidy: 860807, match: 151907, subsidyLabel: '原民會補助', milestone: '開始設計', note: '115.3.3辦理水保審議，預計115.4.3完成提送。', date: '114.01.02', owner: '黃張瑄' },
+                    { id: 8, cat: 'living', year: '114/115', name: '馬胎部落公共設施改善工程', total: 2865000, subsidy: 2435250, match: 429750, subsidyLabel: '原民會補助', milestone: '變更設計', note: '因辦理變更設計程序，於115.2.12辦理停工。', date: '114.08.06', owner: '曾永湘' },
+                    { id: 9, cat: 'living', year: '112/113/115', name: '和平部落文化聚會所興建工程', total: 2500000, subsidy: 2125000, match: 375000, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '建照審查中，預計115年4月底前核發建照。', date: '112.09.14', owner: '謝雨芯' },
 
-                    // PAGE 3: 特色道路改善
-                    { id: 11, cat: 'roads', year: '114', name: '錦山里21鄰而完窩聯絡道路改善', total: 7000000, subsidy: 5950000, match: 1050000, subsidyLabel: '原民會補助', milestone: '開始設計', note: '原民會於115.3.9重新核定本案由韌性提升計畫執行。', date: '114.11.12', owner: '江忠智' },
-                    { id: 12, cat: 'roads', year: '114', name: '玉峰村馬美至下文光道路工程', total: 1600000, subsidy: 1360000, match: 240000, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '尾款請款資料於公所上簽中。', date: '114.10.08', owner: '曾永湘' },
-                    { id: 13, cat: 'roads', year: '114', name: '新樂村拉號部落聯絡道改善', total: 800000, subsidy: 680000, match: 120000, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '尾款請款資料於公所上簽中。', date: '114.08.05', owner: '曾永湘' },
+                    // --- 特色道路 (已核定) ---
+                    { id: 10, cat: 'roads', year: '115/114', name: '錦山里21鄰而完窩聯絡道路改善', total: 7000000, subsidy: 5950000, match: 1050000, subsidyLabel: '原民會補助', milestone: '開始規劃設計', note: '原民會於115.3.9重新核定由特色道路韌性提升計畫執行。', date: '114.11.12', owner: '江忠智' },
+                    { id: 11, cat: 'roads', year: '114', name: '玉峰村馬美至下文光道路工程', total: 1600000, subsidy: 1360000, match: 240000, subsidyLabel: '原民會補助', milestone: '規劃設計完成', note: '尾款請款資料於公所上簽中。', date: '114.10.08', owner: '曾永湘' },
 
-                    // PAGE 4 & 5: 6000萬縣款
-                    { id: 14, cat: 'subsidy60m', year: '115', name: '尖石鄉綜合運動場設施改善', total: 6500000, subsidy: 4550000, match: 1950000, subsidyLabel: '縣府補助70%', milestone: '公開評選', note: '刻正辦理勞務發包中。', date: '115.02.12', owner: '劉德華' },
-                    { id: 15, cat: 'subsidy60m', year: '115', name: '那羅部落文化展演場興建規劃', total: 1628550, subsidy: 1139985, match: 488565, subsidyLabel: '縣府補助70%', milestone: '公開評選', note: '刻正辦理勞務發包中。', date: '115.03.11', owner: '曾永湘' },
-                    { id: 16, cat: 'subsidy60m', year: '115', name: '五峰至尖石聯絡道路規劃設計', total: 3500000, subsidy: 2450000, match: 1050000, subsidyLabel: '縣府補助70%', milestone: '待會勘', note: '公所已提案。', date: '未定', owner: '彭約瑟' }
+                    // --- 6000萬縣款 ---
+                    { id: 12, cat: 'subsidy60m', year: '115', name: '尖石鄉綜合運動場設施改善', total: 6500000, subsidy: 4550000, match: 1950000, subsidyLabel: '縣府補助70%', milestone: '公開評選', note: '刻正辦理勞務發包中。', date: '115.02.12', owner: '劉德華' },
+                    { id: 13, cat: 'subsidy60m', year: '115', name: '那羅部落文化展演場興建規劃', total: 1628550, subsidy: 1139985, match: 488565, subsidyLabel: '縣府補助70%', milestone: '公開評選', note: '刻正辦理勞務發包中。', date: '115.03.11', owner: '曾永湘' },
+
+                    // --- 未核定案件 (提案中 / 待審查) ---
+                    { id: 14, cat: 'pending', year: '115', name: '尖石鄉平論文/石磊/帛納外/抬耀部落安全防減災', total: 0, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '114.11.18 提送工程提案至原民會審查中。', date: '未定', owner: '曾永湘' },
+                    { id: 15, cat: 'pending', year: '115', name: '113年馬里光部落公共設施改善工程', total: 18480000, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '114.6.26發函修正提案至原民會。', date: '未定', owner: '曾永湘' },
+                    { id: 16, cat: 'pending', year: '115', name: '錦屏村那羅部落設施改善案', total: 13105550, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '115.2.2原民會退回，公所俟新計畫核定後再提。', date: '未定', owner: '曾永湘' },
+                    { id: 17, cat: 'pending', year: '115', name: '上、下田埔部落共設施改善工程', total: 10400000, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '115.1.27原民會退回，俟新計畫核定再提。', date: '未定', owner: '曾永湘' },
+                    { id: 18, cat: 'pending', year: '115', name: '秀巒村泰崗至錦路道路(第三期)改善', total: 32210000, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '114.9.19發函修正提案至原民會。', date: '未定', owner: '江忠智' },
+                    { id: 19, cat: 'pending', year: '115', name: '尖石鄉司馬庫斯/義興同心道路改善', total: 60760000, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '115.1.20發函修正提案至原民會。', date: '未定', owner: '江忠智' },
+                    { id: 20, cat: 'pending', year: '115', name: '大隘村伍頓/成功/祭場道路改善案', total: 105827500, subsidy: 0, match: 0, subsidyLabel: '原民會補助', milestone: '提案中', note: '發函修正提案至原民會。', date: '未定', owner: '江忠智' },
+                    { id: 21, cat: 'pending', year: '115', name: '尖石鄉及五峰鄉環境改善陳情案(共10案)', total: 0, subsidy: 0, match: 0, subsidyLabel: '縣府補助70%', milestone: '提案中', note: '僅接獲需求，未會勘、未提案。', date: '未定', owner: '未填寫' }
                 ],
                 get filteredProjects() {
                     return this.filter === 'all' ? this.projects : this.projects.filter(p => p.cat === this.filter);
                 },
                 init() {
                     const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); }), {threshold:0.1});
+                    this.$watch('filter', () => setTimeout(() => document.querySelectorAll('.reveal').forEach(el => obs.observe(el)), 100));
                     setTimeout(() => document.querySelectorAll('.reveal').forEach(el => obs.observe(el)), 200);
                 }
             }
